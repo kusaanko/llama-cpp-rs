@@ -31,7 +31,8 @@ include = [
     "/llama.cpp/src/models/*.cpp",
     "/llama.cpp/tools/mtmd/*.h",
     "/llama.cpp/tools/mtmd/*.cpp",
-    "/llama.cpp/tools/mtmd/CMakeLists.txt",
+    "/llama.cpp/tools/mtmd/models/*.h",
+    "/llama.cpp/tools/mtmd/models/*.cpp",
 
     "/llama.cpp/convert_hf_to_gguf.py", # Yes, it's required
     "/llama.cpp/common/build-info.cpp.in",

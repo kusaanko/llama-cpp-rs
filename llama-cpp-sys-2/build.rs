@@ -521,10 +521,6 @@ fn main() {
     config.define("LLAMA_BUILD_COMMON", "ON");
     config.define("LLAMA_CURL", "OFF");
 
-    if cfg!(feature = "mtmd") {
-        // mtmd support in llama-cpp is within the tools directory
-        config.define("LLAMA_BUILD_TOOLS", "ON");
-    }
 
     // Pass CMAKE_ environment variables down to CMake
     for (key, value) in env::vars() {
@@ -805,6 +801,46 @@ fn main() {
         .always_configure(false);
 
     let build_dir = config.build();
+
+    // Build mtmd directly with cc::Build, bypassing the cmake tools build.
+    // Using LLAMA_BUILD_TOOLS=ON would pull in all tools (batched-bench, quantize, etc.)
+    // and their CMakeLists.txt files, which are not included in the crate package.
+    if cfg!(feature = "mtmd") {
+        let mtmd_src = llama_src.join("tools/mtmd");
+        let mut mtmd_build = cc::Build::new();
+        mtmd_build
+            .cpp(true)
+            .include(&mtmd_src)
+            .include(&llama_src)
+            .include(llama_src.join("include"))
+            .include(llama_src.join("ggml/include"))
+            .include(llama_src.join("common"))
+            .include(llama_src.join("vendor"))
+            .flag_if_supported("-std=c++17")
+            .flag_if_supported("-Wno-cast-qual")
+            .pic(true);
+
+        if matches!(target_os, TargetOs::Windows(WindowsVariant::Msvc)) {
+            mtmd_build.flag("/std:c++17");
+        }
+
+        // Collect all .cpp files in tools/mtmd and its subdirectories
+        for entry in glob(mtmd_src.join("**/*.cpp").to_str().unwrap()).unwrap() {
+            match entry {
+                Ok(path) => {
+                    // Skip CLI / deprecation-warning binaries — we only want the library sources
+                    let filename = path.file_name().unwrap().to_str().unwrap();
+                    if filename == "mtmd-cli.cpp" || filename == "deprecation-warning.cpp" {
+                        continue;
+                    }
+                    mtmd_build.file(&path);
+                }
+                Err(e) => println!("cargo:warning=mtmd glob error: {}", e),
+            }
+        }
+
+        mtmd_build.compile("mtmd");
+    }
 
     // Search paths
     println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
