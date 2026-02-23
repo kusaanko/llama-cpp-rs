@@ -1470,7 +1470,7 @@ dependencies = [
  "llguidance",
  "serde_json",
  "thiserror",
- "toktrie",
+ "toktrie 1.5.1",
  "tracing",
  "tracing-core",
  "tracing-subscriber",
@@ -1502,7 +1502,7 @@ dependencies = [
  "regex-syntax",
  "serde",
  "serde_json",
- "toktrie",
+ "toktrie 0.7.30",
 ]
 
 [[package]]
@@ -2556,6 +2556,19 @@ name = "toktrie"
 version = "0.7.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f608eb3d140a51dde49b581009c5c08543e1bfd45d3591b6c2d724007fc777c7"
+dependencies = [
+ "anyhow",
+ "bytemuck",
+ "bytemuck_derive",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "toktrie"
+version = "1.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ffa8a452d8e72d897dc752aa6e93d8c7caae130d93292bb5b8c5e59baf0082b1"
 dependencies = [
  "anyhow",
  "bytemuck",
