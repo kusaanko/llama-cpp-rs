@@ -345,13 +345,14 @@ impl LlamaModel {
     /// use llama_cpp_2::model::AddBos;
     /// let backend = llama_cpp_2::llama_backend::LlamaBackend::init()?;
     /// let model = LlamaModel::load_from_file(&backend, Path::new("path/to/model"), &Default::default())?;
-    /// let tokens = model.str_to_token("Hello, World!", AddBos::Always)?;
+    /// let tokens = model.str_to_token("Hello, World!", AddBos::Always, true)?;
     /// # Ok(())
     /// # }
     pub fn str_to_token(
         &self,
         str: &str,
         add_bos: AddBos,
+        parse_special: bool,
     ) -> Result<Vec<LlamaToken>, StringToTokenError> {
         let add_bos = match add_bos {
             AddBos::Always => true,
@@ -373,7 +374,7 @@ impl LlamaModel {
                 buffer.as_mut_ptr().cast::<llama_cpp_sys_2::llama_token>(),
                 buffer_capacity,
                 add_bos,
-                true,
+                parse_special,
             )
         };
 
@@ -389,7 +390,7 @@ impl LlamaModel {
                     buffer.as_mut_ptr().cast::<llama_cpp_sys_2::llama_token>(),
                     -size,
                     add_bos,
-                    true,
+                    parse_special,
                 )
             }
         } else {
