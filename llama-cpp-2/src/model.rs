@@ -328,6 +328,11 @@ impl LlamaModel {
 
     /// Convert a string to a Vector of tokens.
     ///
+    /// # Parameters
+    /// - `str`: The string to tokenize.
+    /// - `add_bos`: Whether to add a beginning of stream token to the start of the string. See [`AddBos`] for more details.
+    /// - `parse_special`: Whether to parse special tokens in the string. If false, special tokens will be treated as plain text.
+    ///
     /// # Errors
     ///
     /// - if [`str`] contains a null byte.
